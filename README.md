@@ -17,4 +17,4 @@ It is made with Dotnet Core 3.1 and build as a self contained exe with builtin f
 
 Usage: 
   - Copying the executable file to the folder you want to organize and run it;
-  - Passing the folders as a command line parameter: FileOrganizer "c:\temp\" "d:\temp\"
+  - Passing the folders as a command line parameter: FileOrganizer.exe "c:\temp\" "d:\temp\"
