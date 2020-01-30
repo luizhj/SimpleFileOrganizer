@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FileOrganizer", "FileOrganizer\FileOrganizer.fsproj", "{859C7A69-197E-4175-BD86-A4E5D9B5D6D7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{859C7A69-197E-4175-BD86-A4E5D9B5D6D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{859C7A69-197E-4175-BD86-A4E5D9B5D6D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{859C7A69-197E-4175-BD86-A4E5D9B5D6D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{859C7A69-197E-4175-BD86-A4E5D9B5D6D7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F35D6F16-99B8-4B82-8C68-BDF22087A5ED}
+	EndGlobalSection
+EndGlobal

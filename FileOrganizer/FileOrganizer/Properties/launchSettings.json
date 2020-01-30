@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FileOrganizer": {
+      "commandName": "Project",
+      "commandLineArgs": "\"d:\\temp\\New Folder\\\""
+    }
+  }
+}
