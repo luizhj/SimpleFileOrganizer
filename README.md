@@ -12,3 +12,4 @@ The files will be placed in the following folders:
 \2019\12\otherfile.txt
 \2020\01\myfile.txt
 
+It is made with Dotnet Core 3.1 and build as a self contained exe with builtin framework.
