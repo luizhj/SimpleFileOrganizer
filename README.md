@@ -9,11 +9,6 @@ otherfile.txt - Created in 2019-12-15
 
 The files will be placed in the following folders:
 
---2019
-  | -- 12
-    | -- otherfile.txt
-    
---2020
-  | -- 01
-    | -- myfile.txt
+\2019\12\otherfile.txt
+\2020\01\myfile.txt
 
