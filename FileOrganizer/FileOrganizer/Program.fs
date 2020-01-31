@@ -1,16 +1,43 @@
 ﻿open System.IO
 
+type FileData = 
+    {
+        Year:string 
+        Month:string 
+        Name:string 
+        FullName:string
+    }
+
+type MyFile = 
+    {
+        Path:string
+        FileName:string
+        FullName:string
+    }
+
+type ToMove = 
+    {
+        OldFile:string
+        NewFile:string
+    }
+
 let movefile (file:string,newfile:string) = 
-    stdout.WriteLine("Moving file "+file+" to "+newfile)
+    printfn "Moving file %s to %s" file newfile
     try 
         File.Move(file,newfile)
     with
-        | ex -> stdout.WriteLine("Error moving file "+file+" '"+ex.Message+"'")
+        | ex -> printfn "Error moving file %s :'%s'" file ex.Message
 
 let changearray (path:string,files:array<FileInfo>) =
-    files |> Array.map(fun x -> ([|x.CreationTime.Year.ToString();x.CreationTime.Month.ToString(); x.Name; x.FullName|]))
-          |> Array.map(fun x -> ([|x.[0];x.[1].PadLeft(2,'0');x.[2];x.[3] |] ))
-          |> Array.map(fun x -> ([|Path.Combine([|path;x.[0];x.[1]|]);x.[2];x.[3]   |]) )
+    files |> Array.map(fun (x:FileInfo) -> ({ Year = x.CreationTime.Year.ToString()
+                                              Month = x.CreationTime.Month.ToString().PadLeft(2,'0')
+                                              Name = x.Name
+                                              FullName = x.FullName
+                                            }))
+          |> Array.map(fun (x:FileData) -> ( { Path = Path.Combine( [| path; x.Year; x.Month |] )
+                                               FileName = x.Name
+                                               FullName = x.FullName
+                                             }) )
 
 let isHiddenOrSystem filename = 
     let att = File.GetAttributes(filename).ToString()
@@ -23,52 +50,48 @@ let startprocess(path:string) =
     if (Directory.Exists(path)) then 
         let dir = new DirectoryInfo(path)
         let files = dir.GetFiles() 
-                        |> Array.filter(fun x -> (x.FullName <> executable))
-                        |> Array.filter(fun x -> (isHiddenOrSystem x.FullName))
+                        |> Array.filter(fun (x:FileInfo) -> (x.FullName <> executable))
+                        |> Array.filter(fun (x:FileInfo) -> (isHiddenOrSystem x.FullName))
 
         if (files.Length > 0) then
             changearray(path,files)
-                            |> Array.map(fun x -> (x.[0]))
+                            |> Array.map(fun (x:MyFile) -> (x.Path))
                             |> Array.groupBy(fun x -> (x))
                             |> Array.map(fun x -> (Directory.CreateDirectory(fst(x))))
                             |> ignore
 
             changearray(path,files)
-                        |> Array.map(fun x -> ([| Path.Combine(x.[0],x.[1]); x.[2]  |]))
-                        |> Array.map(fun x -> ( movefile(x.[1],x.[0])))
+                        |> Array.map(fun (x:MyFile) -> ({ OldFile = x.FullName
+                                                          NewFile = Path.Combine(x.Path,x.FileName)
+                                                        }))
+                        |> Array.map(fun x -> ( movefile(x.OldFile,x.NewFile)))
                         |> ignore
 
-            0 |> ignore
         else
-            stdout.WriteLine("Not found files to organize in folder "+path+".")
-            0 |> ignore
+            printfn "Not found files to organize in folder %s." path
     else 
-        stdout.WriteLine("Directory not found. "+path)
-        0 |> ignore 
+        printfn "Directory not found. %s" path
 
 
 let start (path:string) =
     if (path.Contains("\"")) then
         startprocess(path.Replace("\"",""))
-        0 |> ignore
     else
         startprocess(path)
-        0 |> ignore
-    0
     
 [<EntryPoint>]
 let main argv =
 
     if (argv.Length > 0) then
         argv |> Array.map(fun x -> (start(x)))
-             |> ignore
-        0 |>ignore
+        |> ignore
+
     else
         let path = Directory.GetCurrentDirectory()
-        start(path) |> ignore
-        0 |>ignore
+        start(path) 
+        |> ignore
 
-    stdout.WriteLine("Press return key to finish.")
+    printfn "Press return key to finish."
     stdin.ReadLine() |> ignore
     0 // return an integer exit code
 
