@@ -1,5 +1,20 @@
 ﻿open System.IO
 
+type SilentOption = SilentOutput | NotSilentOutput
+
+type CommandLineOptions = 
+    { 
+        silent : SilentOption
+        paths : array<string> 
+        help : bool
+    } 
+
+let defaultOptions = {
+    silent = NotSilentOutput;
+    paths = [] |> Array.ofList ;
+    help = false;
+    }
+
 type FileData = 
     {
         Year:string 
@@ -78,20 +93,65 @@ let start (path:string) =
         startprocess(path.Replace("\"",""))
     else
         startprocess(path)
-    
+
+let rec parseCommandLine args optionsSoFar = 
+    match args with 
+
+    // empty list means we're done.
+    | [] -> 
+        optionsSoFar  
+
+    // match silent
+    | "/s"::xs -> 
+        let newOptionsSoFar = { optionsSoFar with silent = SilentOption.SilentOutput}
+        parseCommandLine xs newOptionsSoFar 
+
+    // match silent
+    | "/?"::xs -> 
+        let newOptionsSoFar = { optionsSoFar with help = true}
+        parseCommandLine xs newOptionsSoFar 
+
+    // handle unrecognized option and keep looping
+    | x::xs -> 
+        let array = [x] |> Array.ofList
+        let lista = Array.append array optionsSoFar.paths 
+        let newOptionsSoFar = { optionsSoFar with paths = lista}
+        parseCommandLine xs newOptionsSoFar 
+
+let printHelp (print:bool) =
+    if print then
+        printfn "Usage: FileOrganizer.exe <[path path]> </s> </?>"
+        printfn @"   [path path] list of paths: separated with spaces, without \ at the end and inside of quote marks"
+        printfn """     Sample: "c:\folder with space" e:\temp "\\remote\temp\another folder"  """
+        printfn "       Optional - Default value current folder"
+        printfn ""
+        printfn "   /s - Silent: doesn't ask to press return to exit"
+        printfn "       Optional - Default value ask for return to exit"
+        printfn ""
+        printfn "   /? - Help: show this message "
+
 [<EntryPoint>]
 let main argv =
+    let param = argv |> List.ofArray
+    let result = parseCommandLine param defaultOptions
 
-    if (argv.Length > 0) then
-        argv |> Array.map(fun x -> (start(x)))
-        |> ignore
-
+    // se mostr ajuda sai
+    if (result.help) then
+        printHelp true
     else
-        let path = Directory.GetCurrentDirectory()
-        start(path) 
-        |> ignore
+        // se passou caminhos
+        if (result.paths.Length > 0) then
+            // loop nos caminhos
+            result.paths |> Array.map(fun x -> start(x)) |> ignore
+        // se nao passou
+        else
+            // usa a pasta atual
+            let path = Directory.GetCurrentDirectory()
+            start(path) |> ignore
 
-    printfn "Press return key to finish."
-    stdin.ReadLine() |> ignore
+        // se nao deve ser silencioso
+        if (result.silent = SilentOption.NotSilentOutput) then
+            printfn "Press return key to finish."
+            stdin.ReadLine() |> ignore
     0 // return an integer exit code
 
